@@ -116,17 +116,11 @@ function verif_move (step: number) {
                 valid = true;
                 up();
             }
-            else {
-                valid = false;
-            }
             break;
         case 1:
             if (input.acceleration(Dimension.Y) > 500 && input.acceleration(Dimension.X) > -200 && input.acceleration(Dimension.X) < 200) {
                 valid = true;
                 down();
-            }
-            else {
-                valid = false;
             }
             break;
         case 2:
@@ -134,17 +128,11 @@ function verif_move (step: number) {
                 valid = true;
                 right();
             }
-            else {
-                valid = false;
-            }
             break;
         case 3:
             if (input.acceleration(Dimension.X) < -500 && input.acceleration(Dimension.Y) > -200 && input.acceleration(Dimension.Y) < 200) {
                 valid = true;
                 left();
-            }
-            else {
-                valid = false;
             }
             break;
     }
