@@ -25,7 +25,7 @@ function up () {
         # . # . #
         . . # . .
         . . # . .
-        `)
+        `);
     music.playTone(131, music.beat(BeatFraction.Whole));
 }
 
@@ -36,7 +36,7 @@ function down () {
         # . # . #
         . # # # .
         . . # . .
-        `)
+        `);
     music.playTone(165, music.beat(BeatFraction.Whole));
 }
 
@@ -47,7 +47,7 @@ function right () {
         # # # # #
         . . . # .
         . . # . .
-        `)
+        `);
     music.playTone(220, music.beat(BeatFraction.Whole));
 }
 
@@ -58,7 +58,7 @@ function left () {
         # # # # #
         . # . . .
         . . # . .
-        `)
+        `);
     music.playTone(294, music.beat(BeatFraction.Whole));
 }
 
@@ -69,7 +69,7 @@ function up_left () {
         # . # . .
         # . . # .
         . . . . #
-        `)
+        `);
     music.playTone(392, music.beat(BeatFraction.Whole));
 }
 
@@ -80,7 +80,7 @@ function down_left () {
         # . # . .
         # # . . .
         # # # # .
-        `)
+        `);
     music.playTone(784, music.beat(BeatFraction.Whole));
 }
 
@@ -91,7 +91,7 @@ function down_right () {
         . . # . #
         . . . # #
         . # # # #
-        `)
+        `);
     music.playTone(494, music.beat(BeatFraction.Whole));
 }
 
@@ -102,7 +102,7 @@ function up_right () {
         . . # . #
         . # . . #
         # . . . .
-        `)
+        `);
     music.playTone(659, music.beat(BeatFraction.Whole));
 }
 
@@ -140,7 +140,7 @@ function verif_move (step: number) {
 }
 
 function seqMap () {
-    rand = randint(0, 3)
+    rand = randint(0, 7)
     switch (rand) {
         case 0:
             up();
@@ -154,6 +154,7 @@ function seqMap () {
         case 3:
             left();
             break;
+        
     }
     clear_screen()
 }
@@ -178,7 +179,16 @@ function seq(number:any) {
 
 function jeux3 () {
     while (confirmer) {
-       
+        note = 5.54 * Math.abs(Pos_x);
+        rest = 0.833 * Math.abs(Pos_y);
+        if (PinState2) {
+            music.rest(rest);
+        }
+        if (PinState1) {
+            music.ringTone(note);
+        }
+        serial.writeValue("note", note);
+        serial.writeValue("rest", vol);
     }
 }
 
@@ -275,6 +285,7 @@ level = 1;
 radio.setGroup(55);
 Detection = 0;
 jeux = 0;
+
 basic.forever(function () {
     if (jeux == 0) {
         basic.showString("1");
@@ -291,10 +302,15 @@ basic.forever(function () {
         if (confirmer) {
             jeux3();
         }
+    }
+    else{
+        music.stopAllSounds();
     } 
 })
 
 loops.everyInterval(10, function () {
+    Pos_x = input.rotation(Rotation.Pitch);
+    Pos_y = input.rotation(Rotation.Roll);
     AnalogPinVal1 = pins.analogReadPin(AnalogPin.P1);
     AnalogPinVal2 = pins.analogReadPin(AnalogPin.P2);
     if (AnalogPinVal1 > 500) {
