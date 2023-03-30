@@ -1,309 +1,208 @@
-function right() {
-    basic.showLeds(`
-        . . # . .
-        . . . # .
-        # # # # #
-        . . . # .
-        . . # . .
-        `)
-    music.playTone(220, music.beat(BeatFraction.Whole))
+// Premier jeux
+
+let moove: number;
+interface display {
+    leds: Image,
+    tone: number,
 }
-radio.onReceivedNumber(function (receivedNumber) {
-    Detection = 1
-})
-function jeux1() {
+let dir: display[] =  [{
+        leds: images.createImage(`
+            . . # . .
+            . . # . .
+            # . # . #
+            . # # # .
+            . . # . .
+            `),
+        tone: 165,
+    }, {
+        leds: images.createImage(`
+            . . # . .
+            . # # # .
+            # . # . #
+            . . # . .
+            . . # . .
+            `),
+        tone: 131, 
+    }, {
+        leds: images.createImage(`
+            . . # . .
+            . . . # .
+            # # # # #
+            . . . # .
+            . . # . .
+            `),
+        tone: 220,
+    }, {
+        leds: images.createImage(`
+            . . # . .
+            . # . . .
+            # # # # #
+            . # . . .
+            . . # . .
+            `),
+        tone: 294,
+    }];
+
+function loose_screen() {
+    basic.showLeds(`
+            . . . . .
+            . # . # .
+            . . . . .
+            . # # # .
+            # . . . #
+            `);
+}
+
+function win_screen() {
+    basic.showLeds(`
+            . . . . .
+            . # . # .
+            . . . . .
+            # . . . #
+            . # # # .
+            `);
+}
+
+function clear_screen() {
+    basic.showLeds(`
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            `);
+}
+
+function showDirection(direction: number) {
+    let info: display = dir[direction];
+    info.leds.plotFrame(0);
+    music.playTone(info.tone, music.beat(BeatFraction.Whole));
+    clear_screen();
+}
+
+function acceleration(X: number, Y: number) {
+    console.log("X :" + X);
+    console.log("Y :" + Y);
+    return X > 500 && Y > -500 && Y < 500;
+}
+
+function verifDirection(direction: number) {
+    let X: number = input.acceleration(Dimension.X);
+    let Y: number = input.acceleration(Dimension.Y);
+    let minus: number = -1 + 2 * (direction / 2 >> 0);
+    if ((direction / 2) >> 0 == 0){
+        return acceleration(minus * Y, X);
+    } else {
+        return acceleration(minus * X, Y);
+    }
+}
+
+function game1() {
+    let tab: number[] = [];
     while (confirmer) {
-        //let text = level.toString();
-        //basic.showString("" + (text))
-
-        for (let i = 0; (i < cpt)&&(confirmer); i++) {
-            seq(tab[i]);
+        let verif: boolean = true;
+        tab.push(randint(0, 3));
+        for (let i of tab) {
+            showDirection(i);
         }
-
-        seqMap()
-        tab[cpt] = rand
-        cpt++;
-        let verif: boolean;
-        verif = false
-        for (let cpt2 = 0; cpt2 <= level - 1; cpt2++) {
-            if (!(verif_move(tab[cpt2]))) {
-                verif = true
-                level = 1
-                cpt = 0
-                if(confirmer){
-                loose_screen()
-                }
+        for (let i of tab) { 
+            music.playTone(200, music.beat(BeatFraction.Whole));
+            pause(1000);
+            if (!verifDirection(i)) {
+                tab = [];
+                loose_screen();
+                verif = false;
+                break;
             }
         }
-        if (!(verif)) {
-            win_screen()
-            level += 1
+        if (verif) {
+            win_screen();
         }
     }
 }
 
+// Deuxieme jeux
 
-function up() {
-    basic.showLeds(`
-        . . # . .
-        . # # # .
-        # . # . #
-        . . # . .
-        . . # . .
-        `)
-    music.playTone(131, music.beat(BeatFraction.Whole))
-}
-function left() {
-    basic.showLeds(`
-        . . # . .
-        . # . . .
-        # # # # #
-        . # . . .
-        . . # . .
-        `)
-    music.playTone(294, music.beat(BeatFraction.Whole))
-}
-function verif_move(step: number) {
-    let valid: boolean
-    pause(1000);
-    clear_screen()
-    switch (step) {
-        case 0:
-            if (input.acceleration(Dimension.Y) < -500 && input.acceleration(Dimension.X) > -200 && input.acceleration(Dimension.X) < 200) {
-                valid = true;
-                up();
-            }
-            else {
-                valid = false;
-            }
-            break;
-        case 1:
-            if (input.acceleration(Dimension.Y) > 500 && input.acceleration(Dimension.X) > -200 && input.acceleration(Dimension.X) < 200) {
-                valid = true;
-                down();
-            }
-            else {
-                valid = false;
-            }
-            break;
-        case 2:
-            if (input.acceleration(Dimension.X) > 500 && input.acceleration(Dimension.Y) > -200 && input.acceleration(Dimension.Y) < 200) {
-                valid = true;
-                right();
-            }
-            else {
-                valid = false;
-            }
-            break;
-        case 3:
-            if (input.acceleration(Dimension.X) < -500 && input.acceleration(Dimension.Y) > -200 && input.acceleration(Dimension.Y) < 200) {
-                valid = true;
-                left();
-            }
-            else {
-                valid = false;
-            }
-            break;
+let note: number = 131;
+let vol: number = 200;
+
+let Pos_x: number = 0;
+let Pos_y: number = 0;
+let PinState1: number = 0;
+let PinState2: number = 0;
+
+loops.everyInterval(132, function () {
+    if (jeux == 1 && confirmer) {
+        music.playTone(note, vol);
     }
-    return valid
+});
+
+function getPinstate(pin: number) {
+    let AnalogPin: number = pins.analogReadPin(pin);
+    return AnalogPin > 500 ? 1 : 0;
 }
 
-input.onButtonPressed(Button.A, function () {
-    if (confirmer==0) {
-        if (jeux >= 2) {
-            jeux = 0
-        } else {
-            jeux += 1
-        }
-    }
+loops.everyInterval(10, function () {
+    Pos_x = input.rotation(Rotation.Pitch)
+    Pos_y = input.rotation(Rotation.Roll)
+    PinState1 = getPinstate(AnalogPin.P1);
+    PinState2 = getPinstate(AnalogPin.P2);
 })
 
-function seqMap() {
-    rand = randint(0, 3)
-    switch (rand) {
-        case 0:
-            up();
-            break;
-        case 1:
-            down();
-            break;
-        case 2:
-            right();
-            break;
-        case 3:
-            left();
-            break;
+function keepInRange(state: number, max: number, min: number) {
+    if (note < max) {
+        note += state * 10;
     }
-    clear_screen()
+    if (note > min) {
+        note -= (1 - state) * 10;
+    }
 }
-function seq(number: any) {
 
-    switch (number) {
-        case 0:
-            up();
-            break;
-        case 1:
-            down();
-            break;
-        case 2:
-            right();
-            break;
-        case 3:
-            left();
-            break;
-    }
-    clear_screen()
-}
-function jeux3() {
+function game2() {
     while (confirmer) {
-        note = 5.54 * Math.abs(Pos_x)
-        rest = 0.833 * Math.abs(Pos_y)
-        if (PinState2) {
-            music.rest(rest)
-        }
-        if (PinState1) {
-            music.ringTone(note)
-        }
+        keepInRange(PinState1, 950, 130);
+        keepInRange(PinState2, 254, 32);
+        serial.writeValue("note", note);
+        serial.writeValue("vol", vol);
+    }
+}
+
+// Troisieme jeux
+
+let rest: number = 100;
+
+function game3() {
+    while (confirmer) {
+        note = 5.54 * Math.abs(Pos_x);
+        rest = 0.833 * Math.abs(Pos_y);
+        music.rest(rest * PinState2);
+        music.ringTone(note * PinState1);
         serial.writeValue("note", note)
         serial.writeValue("rest", vol)
     }
     music.stopAllSounds()
 }
-function jeux2() {
-    while (confirmer) {
-        if (PinState1) {
-            if (note <= 950) {
-                note += 10
-            }
-        } else {
-            if (note >= 130) {
-                note += 0 - 10
-            }
-        }
-        if (PinState2) {
-            if (vol <= 254) {
-                vol += 10
-            }
-        } else {
-            if (vol >= 32) {
-                vol += 0 - 10
-            }
-        }
-        serial.writeValue("note", note)
-        serial.writeValue("vol", vol)
-    }
-}
-function clear_screen() {
-    basic.showLeds(`
-        . . . . .
-        . . . . .
-        . . . . .
-        . . . . .
-        . . . . .
-        `)
-}
-input.onButtonPressed(Button.B, function () {
-    if (confirmer == 0) {
-        confirmer = 1
-    } else {
-        confirmer = 0
-    }
-})
-function loose_screen() {
-    basic.showLeds(`
-        . . . . .
-        . # . # .
-        . . . . .
-        . # # # .
-        # . . . #
-        `)
-}
-function win_screen() {
-    basic.showLeds(`
-        . . . . .
-        . # . # .
-        . . . . .
-        # . . . #
-        . # # # .
-        `)
-}
-function down() {
-    basic.showLeds(`
-        . . # . .
-        . . # . .
-        # . # . #
-        . # # # .
-        . . # . .
-        `)
-    music.playTone(165, music.beat(BeatFraction.Whole))
-}
-/**
- * boutons capacitifs
- */
-let AnalogPinVal2 = 0
-let AnalogPinVal1 = 0
-let PinState1 = 0
-let PinState2 = 0
-let Pos_y = 0
-let Pos_x = 0
-let confirmer = 0
-let jeux = 0
-let Detection = 0
-let rest = 0
-let vol = 0
-let note = 0
-let level = 0
-let bearing = 0
-let tab: number[] = []
-let cpt = 0
-let rand: number;
-note = 131
-vol = 200
-rest = 100
-level = 1
-radio.setGroup(55)
-Detection = 0
-jeux = 0
-loops.everyInterval(10, function () {
-    Pos_x = input.rotation(Rotation.Pitch)
-    Pos_y = input.rotation(Rotation.Roll)
-    AnalogPinVal1 = pins.analogReadPin(AnalogPin.P1)
-    AnalogPinVal2 = pins.analogReadPin(AnalogPin.P2)
-    if (AnalogPinVal1 > 500) {
-        PinState1 = 1
-    } else {
-        PinState1 = 0
-    }
-    if (AnalogPinVal2 > 500) {
-        PinState2 = 1
-    } else {
-        PinState2 = 0
-    }
-})
-basic.forever(function () {
-    if (jeux == 0) {
-        basic.showString("1")
-        if (confirmer) {
-            jeux1()
-        }
-    } else if (jeux == 1) {
-        basic.showString("2")
-        if (confirmer) {
-            jeux2()
-        }
-    } else if (jeux == 2) {
-        basic.showString("3")
-        if (confirmer) {
-            jeux3()
-        }
 
+// Menu
+
+let jeux = 0;
+let confirmer = 0;
+
+let function_table: { (): void }[] = [game1, game2, game3];
+
+input.onButtonPressed(Button.A, function () {
+    if (confirmer == 0) {
+        jeux = (jeux + 1) % 3;
     }
-    else {
-        music.stopAllSounds()
-    }
+});
+
+input.onButtonPressed(Button.B, function () {
+    confirmer = (confirmer + 1) % 2;
 })
-loops.everyInterval(132, function () {
-    if (jeux == 1 && confirmer) {
-        music.playTone(note, vol)
+
+basic.forever(function () {
+    basic.showString((jeux + 1).toString());
+    if (confirmer) {
+        function_table[jeux]();
     }
 })
