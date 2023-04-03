@@ -4,44 +4,45 @@ let moove: number;
 interface display {
     leds: Image,
     tone: number,
-}
-let dir: display[] =  [{
-        leds: images.createImage(`
+};
+
+let dir: display[] = [{
+    leds: images.createImage(`
             . . # . .
             . . # . .
             # . # . #
             . # # # .
             . . # . .
             `),
-        tone: 165,
-    }, {
-        leds: images.createImage(`
+    tone: 165,
+}, {
+    leds: images.createImage(`
             . . # . .
             . # # # .
             # . # . #
             . . # . .
             . . # . .
             `),
-        tone: 131, 
-    }, {
-        leds: images.createImage(`
+    tone: 131,
+}, {
+    leds: images.createImage(`
             . . # . .
             . . . # .
             # # # # #
             . . . # .
             . . # . .
             `),
-        tone: 220,
-    }, {
-        leds: images.createImage(`
+    tone: 220,
+}, {
+    leds: images.createImage(`
             . . # . .
             . # . . .
             # # # # #
             . # . . .
             . . # . .
             `),
-        tone: 294,
-    }];
+    tone: 294,
+}];
 
 function loose_screen() {
     basic.showLeds(`
@@ -81,8 +82,6 @@ function showDirection(direction: number) {
 }
 
 function acceleration(X: number, Y: number) {
-    console.log("X :" + X);
-    console.log("Y :" + Y);
     return X > 500 && Y > -500 && Y < 500;
 }
 
@@ -90,7 +89,7 @@ function verifDirection(direction: number) {
     let X: number = input.acceleration(Dimension.X);
     let Y: number = input.acceleration(Dimension.Y);
     let minus: number = -1 + 2 * (direction / 2 >> 0);
-    if ((direction / 2) >> 0 == 0){
+    if ((direction / 2) >> 0 == 0) {
         return acceleration(minus * Y, X);
     } else {
         return acceleration(minus * X, Y);
@@ -105,7 +104,7 @@ function game1() {
         for (let i of tab) {
             showDirection(i);
         }
-        for (let i of tab) { 
+        for (let i of tab) {
             music.playTone(200, music.beat(BeatFraction.Whole));
             pause(1000);
             if (!verifDirection(i)) {
@@ -114,6 +113,7 @@ function game1() {
                 verif = false;
                 break;
             }
+            showDirection(i);
         }
         if (verif) {
             win_screen();
@@ -143,8 +143,8 @@ function getPinstate(pin: number) {
 }
 
 loops.everyInterval(10, function () {
-    Pos_x = input.rotation(Rotation.Pitch)
-    Pos_y = input.rotation(Rotation.Roll)
+    Pos_x = input.rotation(Rotation.Pitch);
+    Pos_y = input.rotation(Rotation.Roll);
     PinState1 = getPinstate(AnalogPin.P1);
     PinState2 = getPinstate(AnalogPin.P2);
 })
@@ -175,12 +175,16 @@ function game3() {
     while (confirmer) {
         note = 5.54 * Math.abs(Pos_x);
         rest = 0.833 * Math.abs(Pos_y);
-        music.rest(rest * PinState2);
-        music.ringTone(note * PinState1);
-        serial.writeValue("note", note)
-        serial.writeValue("rest", vol)
+        if (PinState2) {
+            music.rest(rest);
+        }
+        if (PinState1) {
+            music.ringTone(note);
+        }
+        serial.writeValue("note", note);
+        serial.writeValue("rest", vol);
     }
-    music.stopAllSounds()
+    music.stopAllSounds();
 }
 
 // Menu
