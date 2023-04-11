@@ -1,3 +1,6 @@
+let volMax: number = 50;
+music.setVolume(volMax);
+
 // Premier jeux
 
 let moove: number;
@@ -114,6 +117,14 @@ function game1() {
                 break;
             }
             showDirection(i);
+            if (tab.length == 10) {
+                basic.showIcon(IconNames.Fabulous);
+                music.startMelody(music.builtInMelody(Melodies.Entertainer), MelodyOptions.Once);
+                music.rest(music.beat(BeatFraction.Breve) * 2);
+                tab = [];
+                verif = false;
+                break;
+            }
         }
         if (verif) {
             win_screen();
@@ -124,7 +135,7 @@ function game1() {
 // Deuxieme jeux
 
 let note: number = 131;
-let vol: number = 200;
+let vol: number = volMax;
 
 let Pos_x: number = 0;
 let Pos_y: number = 0;
@@ -149,22 +160,24 @@ loops.everyInterval(10, function () {
     PinState2 = getPinstate(AnalogPin.P2);
 })
 
-function keepInRange(state: number, max: number, min: number) {
-    if (note < max) {
-        note += state * 10;
+function keepInRange(state: number, variable: number, max: number, min: number) {
+    if (variable < max) {
+        variable += state * 10;
     }
-    if (note > min) {
-        note -= (1 - state) * 10;
+    if (variable > min) {
+        variable -= (1 - state) * 10;
     }
+    return variable;
 }
 
 function game2() {
     while (confirmer) {
-        keepInRange(PinState1, 950, 130);
-        keepInRange(PinState2, 254, 32);
+        note = keepInRange(PinState1, note, 950, 130);
+        vol = keepInRange(PinState2, vol, 254, 32);
         serial.writeValue("note", note);
         serial.writeValue("vol", vol);
     }
+    music.stopAllSounds();
 }
 
 // Troisieme jeux
@@ -197,6 +210,9 @@ let function_table: { (): void }[] = [game1, game2, game3];
 input.onButtonPressed(Button.A, function () {
     if (confirmer == 0) {
         jeux = (jeux + 1) % 3;
+    } else {
+        volMax = (volMax + 25) % 200;
+        music.setVolume(volMax);
     }
 });
 
