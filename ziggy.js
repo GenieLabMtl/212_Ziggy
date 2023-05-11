@@ -48,33 +48,15 @@ let dir: display[] = [{
 }];
 
 function loose_screen() {
-    basic.showLeds(`
-            . . . . .
-            . # . # .
-            . . . . .
-            . # # # .
-            # . . . #
-            `);
+    basic.showIcon(IconNames.No);
 }
 
 function win_screen() {
-    basic.showLeds(`
-            . . . . .
-            . # . # .
-            . . . . .
-            # . . . #
-            . # # # .
-            `);
+    basic.showIcon(IconNames.Happy);
 }
 
 function clear_screen() {
-    basic.showLeds(`
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            `);
+    basic.clearScreen();
 }
 
 function showDirection(direction: number) {
@@ -109,7 +91,7 @@ function game1() {
         }
         for (let i of tab) {
             music.playTone(200, music.beat(BeatFraction.Whole));
-            pause(1000);
+            pause(3000);
             if (!verifDirection(i)) {
                 tab = [];
                 loose_screen();
