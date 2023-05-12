@@ -5,45 +5,21 @@ music.setVolume(volMax);
 
 let moove: number;
 interface display {
-    leds: Image,
+    leds: number,
     tone: number,
 };
 
 let dir: display[] = [{
-    leds: images.createImage(`
-            . . # . .
-            . . # . .
-            # . # . #
-            . # # # .
-            . . # . .
-            `),
+    leds: ArrowNames.South,
     tone: 165,
 }, {
-    leds: images.createImage(`
-            . . # . .
-            . # # # .
-            # . # . #
-            . . # . .
-            . . # . .
-            `),
+    leds: ArrowNames.North,
     tone: 131,
 }, {
-    leds: images.createImage(`
-            . . # . .
-            . . . # .
-            # # # # #
-            . . . # .
-            . . # . .
-            `),
+    leds: ArrowNames.East,
     tone: 220,
 }, {
-    leds: images.createImage(`
-            . . # . .
-            . # . . .
-            # # # # #
-            . # . . .
-            . . # . .
-            `),
+    leds: ArrowNames.West,
     tone: 294,
 }];
 
@@ -61,7 +37,7 @@ function clear_screen() {
 
 function showDirection(direction: number) {
     let info: display = dir[direction];
-    info.leds.plotFrame(0);
+    basic.showArrow(info.leds);
     music.playTone(info.tone, music.beat(BeatFraction.Whole));
     clear_screen();
 }
@@ -164,9 +140,22 @@ function game2() {
 
 // Troisieme jeux
 
+function game3() {
+    while (confirmer) {
+        note = 5.54 * Math.abs(Pos_x);
+        rest = 0.833 * Math.abs(Pos_y);
+        music.rest(rest);
+        music.ringTone(note);
+        serial.writeValue("note", note);
+        serial.writeValue("rest", rest);
+    }
+}
+
+// Quatrieme jeux
+
 let rest: number = 100;
 
-function game3() {
+function game4() {
     while (confirmer) {
         note = 5.54 * Math.abs(Pos_x);
         rest = 0.833 * Math.abs(Pos_y);
@@ -187,11 +176,11 @@ function game3() {
 let jeux = 0;
 let confirmer = 0;
 
-let function_table: { (): void }[] = [game1, game2, game3];
+let function_table: { (): void }[] = [game1, game2, game3];//, game4];
 
 input.onButtonPressed(Button.A, function () {
     if (confirmer == 0) {
-        jeux = (jeux + 1) % 3;
+        jeux = (jeux + 1) % function_table.length;
     } else {
         volMax = (volMax + 25) % 200;
         music.setVolume(volMax);
