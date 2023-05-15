@@ -24,15 +24,33 @@ let dir: display[] = [{
 }];
 
 function loose_screen() {
-    basic.showIcon(IconNames.No);
+    basic.showLeds(`
+            . . . . .
+            . # . # .
+            . . . . .
+            . # # # .
+            # . . . #
+            `);
 }
 
 function win_screen() {
-    basic.showIcon(IconNames.Happy);
+    basic.showLeds(`
+            . . . . .
+            . # . # .
+            . . . . .
+            # . . . #
+            . # # # .
+            `);
 }
 
 function clear_screen() {
-    basic.clearScreen();
+    basic.showLeds(`
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            `);
 }
 
 function showDirection(direction: number) {
@@ -67,7 +85,7 @@ function game1() {
         }
         for (let i of tab) {
             music.playTone(200, music.beat(BeatFraction.Whole));
-            pause(3000);
+            pause(1000);
             if (!verifDirection(i)) {
                 tab = [];
                 loose_screen();
