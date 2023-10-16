@@ -172,6 +172,14 @@ function game4() {
 }
 
 // Menu
+let time_paused = 1000;
+
+function showGameId(game: number) {
+    led.setBrightness(255);
+    basic.showString(game.toString(), time_paused);
+    led.fadeOut(time_paused);
+    led.setBrightness(255);
+}
 
 let jeux = 0;
 let confirmer = 0;
@@ -194,6 +202,7 @@ input.onButtonPressed(Button.B, function () {
 basic.forever(function () {
     basic.showString((jeux + 1).toString());
     if (confirmer) {
+        showGameId((jeux + 1));
         function_table[jeux]();
     }
 })
