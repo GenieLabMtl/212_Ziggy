@@ -84,4 +84,5 @@ function game1() {
     game1();
 }
 
+showGameId("1");
 game1();

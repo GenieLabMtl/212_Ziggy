@@ -34,5 +34,5 @@ function game3() {
     }
 }
 
-
+showGameId("3");
 game3();

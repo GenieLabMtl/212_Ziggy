@@ -33,12 +33,12 @@ function keepInRange(state: number, variable: number, max: number, min: number) 
 }
 
 function game2() {
-    while (1){
+    while (1) {
         note = keepInRange(PinState1, note, 950, 130);
         vol = keepInRange(PinState2, vol, 254, 32);
         serial.writeValue("note", note);
         serial.writeValue("vol", vol);
     }
 }
-
+showGameId("2");
 game2();
